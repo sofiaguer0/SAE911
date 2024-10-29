@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Búsqueda de Individuos</title>
+    <link rel="stylesheet" href="historialdetenido.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="logo_catamarca.png" alt="Logo Catamarca" class="logo">
+            <img src="logo_policia.png" alt="Logo Policía" class="logo">
+        </div>
+        <nav class="nav">
+            <a href="#inicio">INICIO</a>
+            <a href="#reportes">REPORTES</a>
+        </nav>
+        <div class="icons">
+            <div class="notification-icon">
+                <span class="bell-icon">🔔</span>
+                <div class="dropdown-content">No hay notificaciones</div>
+            </div>
+            <div class="profile-icon">
+                <img src="profile_picture.png" alt="Perfil" class="profile-pic">
+                <div class="dropdown-content">
+                    <a href="#">Perfil</a>
+                    <a href="#">Configuración</a>
+                    <a href="#">Cerrar Sesión</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h3>Filtrar por:</h3>
+        <button class="filter-button">Fecha</button>
+        <button class="filter-button">Dependencia</button>
+        <button class="filter-button">Tipo y Subtipo</button>
+        <button class="apply-button">Aplicar Filtros</button>
+        <button class="reset-button">Restablecer</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+        <h2>Búsqueda de Individuos</h2>
+        <div class="search-form">
+            <label>Nombre: <input type="text" name="nombre"></label>
+            <label>Alias: <input type="text" name="alias"></label>
+            <label>DNI: <input type="text" name="dni"></label>
+            <button class="search-button">Buscar</button>
+        </div>
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Alias</th>
+                    <th>DNI</th>
+                    <th>Seleccionar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Juan Martín</td>
+                    <td>C.J</td>
+                    <td>12.345.678</td>
+                    <td><button class="view-button">Ver</button></td>
+                </tr>
+                <!-- Puedes agregar más filas según sea necesario -->
+            </tbody>
+        </table>
+    </main>
+</body>
+</html>
