@@ -1,0 +1,152 @@
+/* Diseño general */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.logo {
+    height: 60px;
+    margin-right: 10px;
+}
+/* Nav */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #444;
+    padding: 10px 20px;
+}
+h2 {
+    padding: 20px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+.nav-button {
+    background: none;
+    color: #fff;
+    border: none;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+
+.nav-button:hover {
+    text-decoration: underline;
+}
+
+/* Contenedor para campana y usuario */
+.nav-right {
+    display: flex;
+    gap: 15px; /* Espacio entre iconos */
+}
+
+.notifications, .user-icon {
+    font-size: 24px;
+    color: #fff;
+    cursor: pointer;
+}
+
+/* Layout principal */
+main {
+    display: flex;
+    flex: 1;
+}
+
+
+/* Sección de contenido principal */
+.content {
+    flex: 1;
+    padding: 20px;
+    align-items: center;
+    margin-top: 20px;
+    
+}
+
+.content-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.add-record {
+    padding: 10px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.add-record i {
+    margin-right: 5px;
+}
+
+.record-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    max-width: 600px;
+}
+
+.record-form input,
+.record-form select,
+.record-form textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.record-form label {
+    grid-column: 1 / -1;
+    margin-top: 10px;
+}
+
+.record-form textarea {
+    grid-column: 1 / -1;
+    resize: vertical;
+}
+
+.btn-add {
+    grid-column: 1 / -1;
+    padding: 10px;
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    cursor: pointer;
+    
+}
+
+.btn-cancel {
+    grid-column: 1 / -1;
+    padding: 10px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
