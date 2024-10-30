@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="diseño/diseño.css">
+    <link rel="stylesheet" href="diseño/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <h1 style="color: white;">SAE 911</h1>
+        </div>
+    </header>
+    <div class="sidebar">
+        <h2>Filtrar</h2>
+    
+        <!-- Filtro de Fechas -->
+        <div class="filter-section">
+            <label for="date-range">Rango de fechas:</label>
+            <input type="date" id="date-start" placeholder="Desde">
+            <input type="date" id="date-end" placeholder="Hasta">
+            <select id="predefined-dates">
+                <option value="lastWeek">Última semana</option>
+                <option value="lastMonth">Último mes</option>
+                <option value="lastYear">Último año</option>
+            </select>
+        </div>
+    
+        <!-- Filtro de Dependencia -->
+        <div class="filter-section">
+            <label for="dependencia">Dependencia:</label>
+            <input type="text" id="dependencia-search" placeholder="Buscar dependencia...">
+            <select id="dependencias" multiple>
+                <!-- Opciones generadas dinámicamente con los datos de la tabla 'comisarias' -->
+                <option value="comisaria1">Comisaría 1</option>
+                <option value="comisaria2">Comisaría 2</option>
+                <option value="comisaria3">Comisaría 3</option>
+            </select>
+        </div>
+    
+        <!-- Filtro de Tipo y Subtipo -->
+        <div class="filter-section">
+            <label for="tipo">Tipo de secuestro:</label>
+            <select id="tipo" multiple>
+                <option value="preventivo">Preventivo</option>
+                <option value="infraccion">Por infracción</option>
+                <option value="ilicito">Por hecho ilícito</option>
+            </select>
+    
+            <label for="subtipo">Subtipo de secuestro:</label>
+            <select id="subtipo" multiple>
+                <!-- Opciones dinámicas según el tipo seleccionado -->
+                <option value="subtipo1">Subtipo 1</option>
+                <option value="subtipo2">Subtipo 2</option>
+                <option value="subtipo3">Subtipo 3</option>
+            </select>
+        </div>
+    
+        <!-- Botones de Acción -->
+        <div class="filter-actions">
+            <button onclick="applyFilters()">Aplicar Filtros</button>
+            <button onclick="resetFilters()">Restablecer Filtros</button>
+        </div>
+    </div>
+    <!-- Contenido principal de inicio de sesión -->
+    <main class="chart-container">
+        <div class="chart">
+            <canvas id="barChart"></canvas>
+        </div>
+        <div class="chart">
+            <canvas id="pieChart"></canvas>
+        </div>
+    </main>
+
+    <script src="controladores/dashboard.js"></script>
+
+</body>
+
+</html>
