@@ -1,67 +1,91 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Búsqueda de Individuos</title>
-    <link rel="stylesheet" href="diseño/historialdetenido.css">
-</head>
-<body>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="diseño/historialdetenido.css" />
+  </head>
+
+  <body class="d-flex flex-column min-vh-100">
     <!-- Header -->
-    <header class="header">x
-<!--         <div class="logo-container">
-            <img src="logo_catamarca.png" alt="Logo Catamarca" class="logo">
-            <img src="logo_policia.png" alt="Logo Policía" class="logo">
-        </div> -->
-        <nav class="nav">
-            <a href="#inicio">INICIO</a>
-            <a href="#reportes">REPORTES</a>
-        </nav>
-        <div class="icons">
-            <div class="notification-icon">
-                <span class="bell-icon">🔔</span>
-    <!--             <div class="dropdown-content">No hay notificaciones</div> -->
-            </div>
-            <div class="profile-icon">
-                <img src="profile_picture.png" alt="Perfil" class="profile-pic">
-                <div class="dropdown-content">
-                    <a href="#">Perfil</a>
-                    <a href="#">Configuración</a>
-                    <a href="#">Cerrar Sesión</a>
-                </div>
-            </div>
+    <header class="bg-dark text-white d-flex justify-content-between align-items-center px-4 py-2">
+      <div class="logo-container d-flex">
+        <img src="logo_catamarca.png" alt="Logo Catamarca" class="logo me-3" />
+        <img src="logo_policia.png" alt="Logo Policía" class="logo" />
+      </div>
+      <nav class="nav">
+        <a href="#inicio" class="text-white me-3">INICIO</a>
+        <a href="#reportes" class="text-white">REPORTES</a>
+      </nav>
+      <div class="icons d-flex align-items-center">
+        <div class="notification-icon position-relative me-3">
+          <i class="fas fa-bell fs-4"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            3
+          </span>
         </div>
+        <div class="profile-icon dropdown">
+          <img src="profile_picture.png" alt="Perfil" class="profile-pic rounded-circle" style="width: 40px; height: 40px;" />
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#">Perfil</a></li>
+            <li><a class="dropdown-item" href="#">Configuración</a></li>
+            <li><a class="dropdown-item" href="#">Cerrar Sesión</a></li>
+          </ul>
+        </div>
+      </div>
     </header>
 
-
     <!-- Main Content -->
-    <main class="content">
-        <h2>Búsqueda de Individuos</h2>
-        <div class="search-form">
-            <label>Nombre: <input type="text" name="nombre"></label>
-            <label>Alias: <input type="text" name="alias"></label>
-            <label>DNI: <input type="text" name="dni"></label>
-            <button class="search-button">Buscar</button>
+    <main class="content container my-5">
+      <h2 class="text-center mb-4">Búsqueda de Individuos</h2>
+      <div class="search-form row g-3 justify-content-center mb-4">
+        <div class="col-md-3">
+          <label for="nombre" class="form-label">Nombre</label>
+          <input type="text" id="nombre" name="nombre" class="form-control" />
         </div>
-        <table class="results-table">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Alias</th>
-                    <th>DNI</th>
-                    <th>Seleccionar</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Juan Martín</td>
-                    <td>C.J</td>
-                    <td>12.345.678</td>
-                    <td><button class="view-button">Ver</button></td>
-                </tr>
-                <!-- Puedes agregar más filas según sea necesario -->
-            </tbody>
-        </table>
+        <div class="col-md-3">
+          <label for="alias" class="form-label">Alias</label>
+          <input type="text" id="alias" name="alias" class="form-control" />
+        </div>
+        <div class="col-md-3">
+          <label for="dni" class="form-label">DNI</label>
+          <input type="text" id="dni" name="dni" class="form-control" />
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+          <button class="btn btn-primary w-100">Buscar</button>
+        </div>
+      </div>
+
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Alias</th>
+            <th>DNI</th>
+            <th>Seleccionar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Juan Martín</td>
+            <td>C.J</td>
+            <td>12.345.678</td>
+            <td><button class="btn btn-info text-white">Ver</button></td>
+          </tr>
+          <!-- Agrega más filas según sea necesario -->
+        </tbody>
+      </table>
     </main>
-</body>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>
