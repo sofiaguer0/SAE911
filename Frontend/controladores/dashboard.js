@@ -22,7 +22,7 @@ const barChart = new Chart(barCtx, {
     data: {
         labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
         datasets: [{
-            label: 'Cantidad de Secuestros',
+            label: 'Cantidad de Detenciones',
             data: [12, 19, 3, 5, 2, 3, 7, 10, 6, 8, 9, 4],
             backgroundColor: 'rgba(54, 162, 235, 0.6)',
             borderColor: 'rgba(54, 162, 235, 1)',
