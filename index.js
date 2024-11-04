@@ -17,9 +17,9 @@ const { Pool } = require("pg");
 const ConexionDB = new Pool({
   host: "localhost",
   port: "5432",
-  database: "eventoscta",
+  database: "sae_911",
   user: "postgres",
-  password: "123",
+  password: "",
 });
 
 module.exports = { ConexionDB };
