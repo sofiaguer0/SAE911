@@ -12,18 +12,6 @@ ServidorWeb.use(ClaseExpress.json());
 ServidorWeb.use(ClaseExpress.text());
 ServidorWeb.use(ClaseExpress.urlencoded({ extended: false }));
 
-const { Pool } = require("pg");
-
-/* const ConexionDB = new Pool({
-  host: "localhost",
-  port: "5432",
-  database: "sae_911",
-  user: "postgres",
-  password: "123",
-});
-
-module.exports = { ConexionDB }; */
-
 const mysql = require('mysql2');
 
 const ConexionDB = mysql.createPool({
@@ -46,12 +34,6 @@ ConexionDB.getConnection((err, connection) => {
 
 
 // EVENTO GET
-
-
-
-
-
-
 
 ServidorWeb.listen(PORT, () => {
   console.log("Application is running on port", PORT);
