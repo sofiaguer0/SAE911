@@ -3,7 +3,6 @@ const ClaseExpress = require("express"); // aquí importo la biblioteca express
 const cors = require("cors"); // Importa el paquete cors
 const ServidorWeb = ClaseExpress(); // aquí instancio un obj a partir de la clase express
 
-
 // Usar CORS en todas las rutas
 ServidorWeb.use(cors());
 
@@ -33,7 +32,89 @@ ConexionDB.getConnection((err, connection) => {
 });
 
 
-// EVENTO GET
+//POST PERSONA
+
+ServidorWeb.post("/personas", async (req, res) => {
+  try {
+    const {
+      dni,
+      cuil,
+      nombres,
+      apellidos,
+      genero,
+      fecha_nacimiento,
+      habilitado,
+      usuario_creacion,
+    } = req.body;
+
+    const fecha_creacion = new Date();
+    const resultado = await ConexionDB.query(
+      `INSERT INTO personas (dni, cuil, nombres, apellidos, genero, fecha_nacimiento, habilitado, fecha_creacion, usuario_creacion)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+      [dni, cuil, nombres, apellidos, genero, fecha_nacimiento, habilitado || true, fecha_creacion, usuario_creacion]
+    );
+
+    res.status(201).json(resultado.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error al crear el usuario" });
+  }
+});
+
+
+
+
+// GET: /personas/:id
+ServidorWeb.get("/personas/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const resultado = await ConexionDB.query(
+      `SELECT * FROM personas WHERE id = $1 AND eliminado = false`,
+      [id]
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    res.json(resultado.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error al obtener el usuario" });
+  }
+});
+
+
+
+
+//GET USUARIOS
+
+ServidorWeb.get("/usuarios/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const resultado = await ConexionDB.query(
+      `SELECT id, persona_id, nombre, email, rol, imagen, comisaria_id, habilitado, fecha_creacion, usuario_creacion
+       FROM usuarios
+       WHERE id = $1 AND eliminado = false`,
+      [id]
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).json({ message: "Usuario no encontrado o eliminado" });
+    }
+
+    res.json(resultado.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error al obtener el usuario" });
+  }
+})
+
+
+
+
+
 
 ServidorWeb.listen(PORT, () => {
   console.log("Application is running on port", PORT);
