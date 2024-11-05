@@ -13,15 +13,36 @@ ServidorWeb.use(ClaseExpress.urlencoded({ extended: false }));
 
 const { Pool } = require("pg");
 
-const ConexionDB = new Pool({
+/* const ConexionDB = new Pool({
   host: "localhost",
   port: "5432",
   database: "sae_911",
   user: "postgres",
-  password: "",
+  password: "123",
 });
 
-module.exports = { ConexionDB };
+module.exports = { ConexionDB }; */
+
+const mysql = require('mysql2');
+
+const ConexionDB = mysql.createPool({
+  host: 'localhost',
+  port: 3306,
+  database: 'sae_911',
+  user: 'root', // Cambia 'root' por tu usuario de MySQL
+  password: '', // Coloca aquí la contraseña de tu usuario de MySQL
+});
+
+// Verifica la conexión
+ConexionDB.getConnection((err, connection) => {
+  if (err) {
+    console.error('Error de conexión a la base de datos:', err);
+  } else {
+    console.log('Conexión exitosa a la base de datos MySQL');
+    connection.release(); // Libera la conexión cuando terminas de usarla
+  }
+});
+
 
 //POST PERSONA
 
