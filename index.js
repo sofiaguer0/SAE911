@@ -83,24 +83,29 @@ ServidorWeb.get("/usuarios/:id", (req, res) => {
 
 
 // GET: /personas/:id
-ServidorWeb.get("/personas/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const resultado = await ConexionDB.query(
-      `SELECT * FROM personas WHERE id = $1 AND eliminado = false`,
-      [id]
-    );
-
-    if (resultado.rows.length === 0) {
-      return res.status(404).json({ message: "Usuario no encontrado" });
+ServidorWeb.get("/personas/:id", (req, res) => {
+  const { id } = req.params;
+  ConexionDB.query(
+    `SELECT id, dni, cuit, nombres, apellidos, genero, fecha_nacimiento, habilitado, 
+            fecha_creacion, usuario_creacion, eliminado, fecha_eliminacion, usuario_eliminacion
+     FROM personas
+     WHERE id = ? AND eliminado = false`,
+    [id],
+    (error, results) => {
+      if (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error al obtener la persona" });
+      } else if (results.length === 0) {
+        res.status(404).json({ message: "Persona no encontrada o eliminada" });
+      } else {
+        res.json(results[0]);
+      }
     }
-
-    res.json(resultado.rows[0]);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error al obtener el usuario" });
-  }
+  );
 });
+
+
+
 
 
 ServidorWeb.listen(PORT, () => {
