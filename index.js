@@ -33,7 +33,6 @@ ConexionDB.getConnection((err, connection) => {
 
 
 //POST PERSONA
-
 ServidorWeb.post("/personas", async (req, res) => {
   try {
     const {
@@ -61,7 +60,26 @@ ServidorWeb.post("/personas", async (req, res) => {
   }
 });
 
-
+//GET USUARIOS FUNCIONA//
+ServidorWeb.get("/usuarios/:id", (req, res) => {
+  const { id } = req.params;
+  ConexionDB.query(
+    `SELECT id, persona_id, nombre, email, rol, imagen, comisaria_id, habilitado, fecha_creacion, usuario_creacion
+     FROM usuarios
+     WHERE id = ? AND eliminado = false`,
+    [id],
+    (error, results) => {
+      if (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error al obtener el usuario" });
+      } else if (results.length === 0) {
+        res.status(404).json({ message: "Usuario no encontrado o eliminado" });
+      } else {
+        res.json(results[0]);
+      }
+    }
+  );
+});
 
 
 // GET: /personas/:id
@@ -83,37 +101,6 @@ ServidorWeb.get("/personas/:id", async (req, res) => {
     res.status(500).json({ message: "Error al obtener el usuario" });
   }
 });
-
-
-
-
-//GET USUARIOS
-
-ServidorWeb.get("/usuarios/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    
-    const resultado = await ConexionDB.query(
-      `SELECT id, persona_id, nombre, email, rol, imagen, comisaria_id, habilitado, fecha_creacion, usuario_creacion
-       FROM usuarios
-       WHERE id = $1 AND eliminado = false`,
-      [id]
-    );
-
-    if (resultado.rows.length === 0) {
-      return res.status(404).json({ message: "Usuario no encontrado o eliminado" });
-    }
-
-    res.json(resultado.rows[0]);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error al obtener el usuario" });
-  }
-})
-
-
-
-
 
 
 ServidorWeb.listen(PORT, () => {
