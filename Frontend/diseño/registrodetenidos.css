@@ -96,3 +96,51 @@ h2 {
     border-radius: 5px;
     margin-top: 10px;
 }
+
+:root {
+    --police-blue: #1a237e;
+    --police-gold: #ffd700;
+    --police-gray: #37474f;
+}
+
+body {
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+.header-container {
+    background: var(--police-blue);
+    border-bottom: 4px solid var(--police-gold);
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.header-img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .header-container {
+        height: 80px;
+    }
+
+    .header-img {
+        height: 80px;
+    }
+}
+
+@media (min-width: 769px) {
+    .header-container {
+        height: 120px;
+    }
+
+    .header-img {
+        height: 120px;
+    }
+}

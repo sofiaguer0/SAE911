@@ -32,7 +32,7 @@ ConexionDB.getConnection((err, connection) => {
 });
 
 
-//POST PERSONA
+//POST PERSONA//
 ServidorWeb.post("/personas", async (req, res) => {
   try {
     const {
