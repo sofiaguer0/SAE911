@@ -96,7 +96,7 @@ h2 {
     border-radius: 5px;
     margin-top: 10px;
 }
-
+/* 
 :root {
     --police-blue: #1a237e;
     --police-gold: #ffd700;
@@ -115,14 +115,8 @@ body {
     width: 100%;
     position: relative;
     overflow: hidden;
-}
+} */
 
-.header-img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    object-position: center;
-}
 
 /* Estilos responsivos */
 @media (max-width: 768px) {
