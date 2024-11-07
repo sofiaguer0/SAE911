@@ -66,7 +66,7 @@ ServidorWeb.get("/usuarios/:id", (req, res) => {
   ConexionDB.query(
     `SELECT id, persona_id, nombre, email, rol, imagen, comisaria_id, habilitado, fecha_creacion, usuario_creacion
      FROM usuarios
-     WHERE id = ? AND eliminado = false`,
+     WHERE id = 1 AND eliminado = false`,
     [id],
     (error, results) => {
       if (error) {
@@ -86,7 +86,7 @@ ServidorWeb.get("/usuarios/:id", (req, res) => {
 ServidorWeb.get("/personas/:id", (req, res) => {
   const { id } = req.params;
   ConexionDB.query(
-    `SELECT id, dni, cuit, nombres, apellidos, genero, fecha_nacimiento, habilitado, 
+    `SELECT id, dni, cuil, nombres, apellidos, genero, fecha_nacimiento, habilitado, 
             fecha_creacion, usuario_creacion, eliminado, fecha_eliminacion, usuario_eliminacion
      FROM personas
      WHERE id = ? AND eliminado = false`,
