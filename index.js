@@ -18,7 +18,7 @@ const ConexionDB = mysql.createPool({
   port: 3306,
   database: 'sae_911',
   user: 'root', // Cambia 'root' por tu usuario de MySQL
-  password: '12345678', // Coloca aquí la contraseña de tu usuario de MySQL
+  password: '', // Coloca aquí la contraseña de tu usuario de MySQL
 });
 
 // Verifica la conexión
@@ -32,31 +32,6 @@ ConexionDB.getConnection((err, connection) => {
 });
 
 
-
-//post registrp
-ServidorWeb.post("/registro", async (req, res) => {
-  const {
-    persona_id, usuario_id, ubicacion_id, dni, fecha, hora, alias, imagenes, tipo, descripcion, comisaria_id
-  } = req.body;
-
-  const query = `
-    INSERT INTO registros_detenidos 
-    (persona_id, usuario_id, ubicacion_id, dni, fecha, hora, alias, imagenes, tipo, descripcion, comisaria_id) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  const values = [
-    persona_id, usuario_id, ubicacion_id, dni, fecha, hora, alias, imagenes, tipo, descripcion, comisaria_id
-  ];
-
-  try {
-    const [result] = await ConexionDB.promise().query(query, values);
-    res.status(201).json({ message: "Registro creado exitosamente", id: result.insertId });
-  } catch (error) {
-    console.error("Error al crear el registro:", error);
-    res.status(500).json({ error: "Error al crear el registro" });
-  }
-});
 
 //GET USUARIOS FUNCIONA//
 ServidorWeb.get("/usuarios/:id", (req, res) => {
@@ -80,7 +55,7 @@ ServidorWeb.get("/usuarios/:id", (req, res) => {
 });
 
 
-// GET: /personas/:id
+// GET PERSONAS FUNCIONA// 
 ServidorWeb.get("/personas/:id", (req, res) => {
   const { id } = req.params;
   ConexionDB.query(
@@ -102,42 +77,30 @@ ServidorWeb.get("/personas/:id", (req, res) => {
   );
 });
 
-//registros 
 
-ServidorWeb.get("/registros", (req, res) => {
-  const query = "SELECT * FROM registros_detenidos";
-  ConexionDB.query(query, (err, results) => {
-    if (err) {
-      console.error("Error al obtener los registros:", err);
-      res.status(500).json({ error: "Error al obtener los registros" });
-    } else {
-      res.status(200).json(results);
+//REGISTROS_DETENIDOS FUNCIONAAAA//
+ServidorWeb.get("/registros/:id", (req, res) => {
+  const { id } = req.params; // Obtener el id de los parámetros de la URL
+  
+  ConexionDB.query(
+    `SELECT id, persona_id, usuario_id, ubicacion_id, fecha, hora, alias, imagenes, habilitado, eliminado, causa, tipo, descripcion, comisaria_id
+     FROM registros_detenidos
+     WHERE id = ? AND eliminado = false`,
+    [id],
+    (error, results) => {
+      if (error) {
+        console.error("Error en la consulta:", error);
+        res.status(500).json({ message: "Error al obtener el registro" });
+      } else {
+        if (results.length === 0) {
+          res.status(404).json({ message: "Registro no encontrado o eliminado" });
+        } else {
+          res.json(results[0]);
+        }
+      }
     }
-  });
+  );
 });
-
-// Endpoint para crear un nuevo registro
-ServidorWeb.post("/registro", (req, res) => {
-  const { persona_id, usuario_id, ubicacion_id, dni, fecha, hora, alias, imagenes, tipo, descripcion, comisaria_id } = req.body;
-
-  const query = `
-    INSERT INTO registros_detenidos 
-    (persona_id, usuario_id, ubicacion_id, fecha, hora, alias, imagenes, tipo, descripcion, comisaria_id) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  const values = [persona_id, usuario_id, ubicacion_id, fecha, hora, alias, imagenes, tipo, descripcion, comisaria_id];
-
-  ConexionDB.query(query, values, (err, result) => {
-    if (err) {
-      console.error("Error al crear el registro:", err);
-      res.status(500).json({ error: "Error al crear el registro" });
-    } else {
-      res.status(201).json({ message: "Registro creado exitosamente", id: result.insertId });
-    }
-  });
-});
-
 
 
 ServidorWeb.listen(PORT, () => {
