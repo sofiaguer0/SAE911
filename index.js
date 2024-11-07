@@ -11,17 +11,6 @@ ServidorWeb.use(ClaseExpress.json());
 ServidorWeb.use(ClaseExpress.text());
 ServidorWeb.use(ClaseExpress.urlencoded({ extended: false }));
 
-
-/* const ConexionDB = new Pool({
-  host: "localhost",
-  port: "5432",
-  database: "sae_911",
-  user: "postgres",
-  password: "123",
-});
-
-module.exports = { ConexionDB }; */
-
 const mysql = require('mysql2');
 
 const ConexionDB = mysql.createPool({
@@ -69,69 +58,49 @@ ServidorWeb.post("/registro", async (req, res) => {
   }
 });
 
-
-
-
-//get 
-ServidorWeb.get("/registros", async (req, res) => {
-  try {
-    const [results] = await ConexionDB.promise().query("SELECT * FROM registros_detenidos");
-    res.status(200).json(results);
-  } catch (error) {
-    console.error("Error al obtener los registros:", error);
-    res.status(500).json({ error: "Error al obtener los registros" });
-  }
+//GET USUARIOS FUNCIONA//
+ServidorWeb.get("/usuarios/:id", (req, res) => {
+  const { id } = req.params;
+  ConexionDB.query(
+    `SELECT id, persona_id, nombre, email, rol, imagen, comisaria_id, habilitado, fecha_creacion, usuario_creacion
+     FROM usuarios
+     WHERE id = 1 AND eliminado = false`,
+    [id],
+    (error, results) => {
+      if (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error al obtener el usuario" });
+      } else if (results.length === 0) {
+        res.status(404).json({ message: "Usuario no encontrado o eliminado" });
+      } else {
+        res.json(results[0]);
+      }
+    }
+  );
 });
-
 
 
 // GET: /personas/:id
-ServidorWeb.get("/personas/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const resultado = await ConexionDB.query(
-      `SELECT * FROM personas WHERE id = $1 AND eliminado = false`,
-      [id]
-    );
-
-    if (resultado.rows.length === 0) {
-      return res.status(404).json({ message: "Usuario no encontrado" });
+ServidorWeb.get("/personas/:id", (req, res) => {
+  const { id } = req.params;
+  ConexionDB.query(
+    `SELECT id, dni, cuil, nombres, apellidos, genero, fecha_nacimiento, habilitado, 
+            fecha_creacion, usuario_creacion, eliminado, fecha_eliminacion, usuario_eliminacion
+     FROM personas
+     WHERE id = ? AND eliminado = false`,
+    [id],
+    (error, results) => {
+      if (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error al obtener la persona" });
+      } else if (results.length === 0) {
+        res.status(404).json({ message: "Persona no encontrada o eliminada" });
+      } else {
+        res.json(results[0]);
+      }
     }
-
-    res.json(resultado.rows[0]);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error al obtener el usuario" });
-  }
+  );
 });
-
-
-
-
-//GET USUARIOS
-
-ServidorWeb.get("/usuarios/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    
-    const resultado = await ConexionDB.query(
-      `SELECT id, persona_id, nombre, email, rol, imagen, comisaria_id, habilitado, fecha_creacion, usuario_creacion
-       FROM usuarios
-       WHERE id = $1 AND eliminado = false`,
-      [id]
-    );
-
-    if (resultado.rows.length === 0) {
-      return res.status(404).json({ message: "Usuario no encontrado o eliminado" });
-    }
-
-    res.json(resultado.rows[0]);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error al obtener el usuario" });
-  }
-})
-
 
 //registros 
 
