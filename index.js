@@ -56,14 +56,14 @@ ServidorWeb.get("/usuarios/:id", (req, res) => {
 
 
 // GET PERSONAS FUNCIONA// 
-ServidorWeb.get("/personas/:id", (req, res) => {
-  const { id } = req.params;
+ServidorWeb.get("/personas/:dni", (req, res) => {
+  const { dni } = req.params;
   ConexionDB.query(
     `SELECT id, dni, cuil, nombres, apellidos, genero, fecha_nacimiento, habilitado, 
             fecha_creacion, usuario_creacion, eliminado, fecha_eliminacion, usuario_eliminacion
      FROM personas
-     WHERE id = ? AND eliminado = false`,
-    [id],
+     WHERE dni = ? AND eliminado = false`,
+    [dni],
     (error, results) => {
       if (error) {
         console.error(error);
@@ -74,16 +74,17 @@ ServidorWeb.get("/personas/:id", (req, res) => {
         res.json(results[0]);
       }
     }
-  );
+  );  
 });
 
 
 //REGISTROS_DETENIDOS FUNCIONAAAA//
 ServidorWeb.get("/registros/:id", (req, res) => {
   const { id } = req.params; // Obtener el id de los parámetros de la URL
-  
+
   ConexionDB.query(
-    `SELECT id, persona_id, usuario_id, ubicacion_id, fecha, hora, alias, imagenes, habilitado, eliminado, causa, tipo, descripcion, comisaria_id
+    `SELECT dni, provincia, departamento, municipio, localidad, id, persona_id, usuario_id, ubicacion_id, fecha, hora, alias, imagenes, habilitado, 
+    eliminado, causa, tipo, descripcion, comisaria_id 
      FROM registros_detenidos
      WHERE id = ? AND eliminado = false`,
     [id],
