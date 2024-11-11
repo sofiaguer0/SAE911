@@ -105,15 +105,23 @@ ServidorWeb.get("/personas/:id", (req, res) => {
 //registros 
 
 ServidorWeb.get("/registros", (req, res) => {
-  const query = "SELECT * FROM registros_detenidos";
-  ConexionDB.query(query, (err, results) => {
-    if (err) {
-      console.error("Error al obtener los registros:", err);
-      res.status(500).json({ error: "Error al obtener los registros" });
-    } else {
-      res.status(200).json(results);
+  const { id } = req.params;
+  ConexionDB.query(
+    `SELECT persona_id, usuario_id, ubicacion_id, fecha, hora, alias, imagenes, tipo, descripcion, comisaria_id
+     FROM registros_detenidos
+     WHERE id = ? `,
+    [id],
+    (error, results) => {
+      if (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error al obtener la persona" });
+      } else if (results.length === 0) {
+        res.status(404).json({ message: "Persona no encontrada o eliminada" });
+      } else {
+        res.json(results[0]);
+      }
     }
-  });
+  );
 });
 
 // Endpoint para crear un nuevo registro
