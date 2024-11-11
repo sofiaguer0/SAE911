@@ -10,11 +10,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "compress.js": "^2.1.2",
     "cors": "^2.8.5",
     "express": "^4.21.1",
     "mysql2": "^3.11.3",
     "pdfmake": "^0.2.15",
     "pg": "^8.13.1",
+    "pica": "^9.0.1",
     "sweetalert2": "^11.14.5"
   }
 }
