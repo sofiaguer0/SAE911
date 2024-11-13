@@ -8,6 +8,9 @@
   <link rel="stylesheet" href="diseño/registrodetenidos.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/pica@latest/dist/pica.min.js"></script>
+<!--   <script src="https://cdn.jsdelivr.net/npm/compress.js@latest/dist/compress.min.js"></script -->>
+
 </head>
 
 <body class="d-flex flex-column min-vh-100">
@@ -62,9 +65,9 @@
           </label>
           <div class="input-group">
             <input type="text" class="form-control" id="dni" name="dni" required placeholder="Ingrese el DNI" />
-              <button class="btn btn-primary" type="button" onclick="buscarDNI()">
+            <button class="btn btn-primary" type="button" onclick="buscarDNI()">
               <i class="fas fa-search"></i>
-              </button>
+            </button>
           </div>
         </div>
 
@@ -110,13 +113,12 @@
         </div>
 
         <!-- Imágenes -->
-        <div class="col-12">
-          <label for="imagenes" class="form-label">
-            <i class="fas fa-camera me-2"></i>Imágenes (Máximo 6)
-          </label>
-          <input type="file" class="form-control" id="imagenes" name="imagenes" multiple accept=".jpg, .png" />
+        <div class="col-12"> <label for="imagenes" class="form-label"> <i class="fas fa-camera me-2"></i>Imágenes
+            (Máximo 6) </label> <input type="file" class="form-control" id="imagenes" name="imagenes" multiple
+            accept=".jpg, .png">
           <div id="preview-container" class="thumbnail-container"></div>
         </div>
+
 
         <!-- Estado -->
         <div class="col-md-6">
@@ -137,6 +139,7 @@
           <textarea class="form-control" id="descripcion" name="descripcion" rows="4"
             placeholder="Ingrese detalles adicionales relevantes para el registro"></textarea>
         </div>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d28066.671779190285!2d-65.798144!3d-28.4393472!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses!2sar!4v1731507863402!5m2!1ses!2sar" width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 
         <!-- Botones -->
         <div class="col-12 d-flex justify-content-center gap-3 mt-4">
@@ -150,12 +153,11 @@
       </form>
     </main>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="controladores/registrodetenidos.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pica@latest/dist/pica.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/compress.js@latest/dist/compress.min.js"></script>
-
+  <!--   <script src="https://cdn.jsdelivr.net/npm/pica@latest/dist/pica.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/compress.js@latest/dist/compress.min.js"></script> -->
 </body>
 
 </html>

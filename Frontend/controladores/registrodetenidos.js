@@ -1,95 +1,3 @@
-/* // Función para buscar DNI
-function buscarDNI() {
-  const dniInput = document.getElementById("dni");
-  const dni = dniInput.value.trim();
-
-  // Verifica que el DNI ingresado no esté vacío
-  if (!dni) {
-    Swal.fire({
-      title: 'Error',
-      text: 'Por favor ingrese un DNI.',
-      icon: 'error',
-      confirmButtonText: 'Aceptar'
-    });
-    return;
-  }
-
-  // Realizar la llamada al servidor para obtener los datos del detenido por DNI
-  fetch(`http://localhost:3001/personas/${dni}`)
-    .then(response => {
-      if (!response.ok) {
-        if (response.status === 404) {
-          // Si la respuesta es 404, significa que la persona no fue encontrada o está eliminada
-          throw new Error(`El DNI ${dni} no está registrado o ha sido eliminado.`);
-        }
-        throw new Error('Error al procesar la solicitud.');
-      }
-      return response.json();
-    })
-    .then(data => {
-      if (data.fecha_creacion) {
-        Swal.fire({
-          title: 'Persona ya registrada',
-          html: `
-            <p>DNI: ${data.dni}</p>
-            <p>Nombres: ${data.nombres}</p>
-            <p>Apellidos: ${data.apellidos}</p>
-            <p>Fecha de Nacimiento: ${data.fecha_nacimiento}</p>
-            <p>Habilitado: ${data.habilitado ? 'Sí' : 'No'}</p>
-            <p>Fecha de Creación: ${data.fecha_creacion}</p>
-            <p>Usuario de Creación: ${data.usuario_creacion}</p>
-          `,
-          icon: 'info',
-          showCancelButton: true,
-          confirmButtonText: 'Editar',
-          cancelButtonText: 'Registrar Nuevo'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.href = `/editar-detenido/${data.id}`;
-          } else if (result.dismiss === Swal.DismissReason.cancel) {
-            dniInput.value = '';
-          }
-        });
-      } else {
-        Swal.fire({
-          title: 'Detenido Encontrado',
-          html: `
-            <p>Nombres: ${data.nombres}</p>
-            <p>Apellidos: ${data.apellidos}</p>
-            <p>DNI: ${data.dni}</p>
-            <p>CUIL: ${data.cuil}</p>
-            <p>Género: ${data.genero}</p>
-            <p>Fecha de Nacimiento: ${data.fecha_nacimiento}</p>
-            <p>Habilitado: ${data.habilitado ? 'Sí' : 'No'}</p>
-            <p>Fecha de Creación: ${data.fecha_creacion}</p>
-            <p>Usuario de Creación: ${data.usuario_creacion}</p>
-          `,
-          icon: 'info',
-          confirmButtonText: 'Aceptar'
-        });
-        document.getElementById('persona_id').value = data.id;
-      }
-    })
-    .catch(error => {
-      Swal.fire({
-        title: 'DNI no encontrado',
-        html: `El DNI ${dni} no está cargado. <button class="btn btn-primary" onclick="limpiarDNI()">Registrar Nuevo Detenido</button>`,
-        icon: 'error',
-        confirmButtonText: 'Aceptar'
-      });
-      console.error('Error al buscar el DNI:', error);
-    });
-}
-
-// Función para limpiar el campo de DNI
-function limpiarDNI() {
-  document.getElementById('dni').value = '';
-}
-
- */
-////
-
-
 // Función para buscar DNI
 function buscarDNI() {
   const dniInput = document.getElementById("dni");
@@ -178,6 +86,79 @@ function buscarDNI() {
       });
     });
 }
+
+
+// Espera hasta que Pica esté disponible
+document.getElementById('imagenes').addEventListener('change', async function(event) {
+  const files = Array.from(event.target.files);
+  const previewContainer = document.getElementById('preview-container');
+  previewContainer.innerHTML = ''; // Limpiar vistas previas anteriores
+
+  // Verifica si hay más de 6 imágenes seleccionadas
+  if (files.length > 6) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Límite de imágenes',
+      text: 'Solo puedes subir un máximo de 6 imágenes.',
+      confirmButtonText: 'Entendido'
+    });
+    event.target.value = ''; // Borra la selección de archivos
+    return;
+  }
+
+  // Inicializa Pica para redimensionar
+  const picaInstance = new pica();
+
+  for (const file of files) {
+    // Verifica el tipo de archivo
+    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Formato no permitido',
+        text: 'Solo se permiten archivos JPG y PNG.',
+        confirmButtonText: 'Ok'
+      });
+      continue;
+    }
+
+    // Verifica el tamaño del archivo
+    if (file.size > 2 * 1024 * 1024) { // Límite de 2 MB
+      Swal.fire({
+        icon: 'error',
+        title: 'Archivo muy grande',
+        text: 'El archivo supera el tamaño máximo de 2 MB.',
+        confirmButtonText: 'Ok'
+      });
+      continue;
+    }
+
+    // Crear una imagen para procesar
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(file);
+    await img.decode();
+
+    // Crear un canvas para redimensionar la imagen
+    const canvas = document.createElement('canvas');
+    canvas.width = 200;  // Ancho deseado para vista previa
+    canvas.height = 200; // Alto deseado para vista previa
+
+    // Redimensionar usando Pica
+    await picaInstance.resize(img, canvas);
+
+    // Convertir el canvas a un Blob para compresión
+    canvas.toBlob((blob) => {
+      // Crear URL para vista previa
+      const previewImage = document.createElement('img');
+      previewImage.src = URL.createObjectURL(blob);
+      previewImage.style.width = '150px'; // Tamaño de vista previa
+      previewImage.style.height = '150px';
+      previewImage.classList.add('thumbnail'); // Agrega clase para estilo si lo necesitas
+      previewContainer.appendChild(previewImage);
+    }, 'image/jpeg', 0.8); // Calidad de compresión (0 a 1)
+  }
+});
+
+
 
 // Función para limpiar el campo de DNI
 function limpiarDNI() {
