@@ -1,7 +1,7 @@
-const PORT = process.env.PORT || 3001; // aquí establezco el puerto
-const ClaseExpress = require("express"); // aquí importo la biblioteca express
-const cors = require("cors"); // Importa el paquete cors
-const ServidorWeb = ClaseExpress(); // aquí instancio un obj a partir de la clase express
+const PORT = process.env.PORT || 3001;
+const ClaseExpress = require("express");
+const cors = require("cors");
+const ServidorWeb = ClaseExpress();
 
 // Usar CORS en todas las rutas
 ServidorWeb.use(cors());
@@ -11,98 +11,129 @@ ServidorWeb.use(ClaseExpress.json());
 ServidorWeb.use(ClaseExpress.text());
 ServidorWeb.use(ClaseExpress.urlencoded({ extended: false }));
 
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
-const ConexionDB = mysql.createPool({
+const pool = mysql.createPool({
   host: 'localhost',
   port: 3306,
   database: 'sae_911',
-  user: 'root', // Cambia 'root' por tu usuario de MySQL
-  password: '', // Coloca aquí la contraseña de tu usuario de MySQL
+  user: 'root',
+  password: ''
 });
 
-// Verifica la conexión
-ConexionDB.getConnection((err, connection) => {
-  if (err) {
-    console.error('Error de conexión a la base de datos:', err);
-  } else {
-    console.log('Conexión exitosa a la base de datos MySQL');
-    connection.release(); // Libera la conexión cuando terminas de usarla
+//GET USUARIOS FUNCIONA//
+ServidorWeb.get("/usuarios/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [results] = await pool.query(
+      `SELECT id, persona_id, nombre, email, rol, imagen, comisaria_id, habilitado, fecha_creacion, usuario_creacion
+       FROM usuarios
+       WHERE id = ? AND eliminado = false`,
+      [id]
+    );
+    if (results.length === 0) {
+      res.status(404).json({ message: "Usuario no encontrado o eliminado" });
+    } else {
+      res.json(results[0]);
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error al obtener el usuario" });
   }
 });
 
-
-
-//GET USUARIOS FUNCIONA//
-ServidorWeb.get("/usuarios/:id", (req, res) => {
-  const { id } = req.params;
-  ConexionDB.query(
-    `SELECT id, persona_id, nombre, email, rol, imagen, comisaria_id, habilitado, fecha_creacion, usuario_creacion
-     FROM usuarios
-     WHERE id = 1 AND eliminado = false`,
-    [id],
-    (error, results) => {
-      if (error) {
-        console.error(error);
-        res.status(500).json({ message: "Error al obtener el usuario" });
-      } else if (results.length === 0) {
-        res.status(404).json({ message: "Usuario no encontrado o eliminado" });
-      } else {
-        res.json(results[0]);
-      }
-    }
-  );
-});
-
-
 // GET PERSONAS FUNCIONA// 
-ServidorWeb.get("/personas/:dni", (req, res) => {
+ServidorWeb.get("/personas/:dni", async (req, res) => {
   const { dni } = req.params;
-  ConexionDB.query(
-    `SELECT id, dni, cuil, nombres, apellidos, genero, fecha_nacimiento, habilitado, 
-            fecha_creacion, usuario_creacion, eliminado, fecha_eliminacion, usuario_eliminacion
-     FROM personas
-     WHERE dni = ? AND eliminado = false`,
-    [dni],
-    (error, results) => {
-      if (error) {
-        console.error(error);
-        res.status(500).json({ message: "Error al obtener la persona" });
-      } else if (results.length === 0) {
-        res.status(404).json({ message: "Persona no encontrada o eliminada" });
-      } else {
-        res.json(results[0]);
-      }
+  try {
+    const [results] = await pool.query(
+      `SELECT id, dni, cuil, nombres, apellidos, genero, fecha_nacimiento, habilitado, 
+              fecha_creacion, usuario_creacion, eliminado, fecha_eliminacion, usuario_eliminacion
+       FROM personas
+       WHERE dni = ? AND eliminado = false`,
+      [dni]
+    );
+    if (results.length === 0) {
+      res.status(404).json({ message: "Persona no encontrada o eliminada" });
+    } else {
+      res.json(results[0]);
     }
-  );  
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error al obtener la persona" });
+  }
 });
-
 
 //REGISTROS_DETENIDOS FUNCIONAAAA//
-ServidorWeb.get("/registros/:id", (req, res) => {
-  const { id } = req.params; // Obtener el id de los parámetros de la URL
-
-  ConexionDB.query(
-    `SELECT dni, provincia, departamento, municipio, localidad, id, persona_id, usuario_id, ubicacion_id, fecha, hora, alias, imagenes, habilitado, 
-    eliminado, causa, tipo, descripcion, comisaria_id 
-     FROM registros_detenidos
-     WHERE id = ? AND eliminado = false`,
-    [id],
-    (error, results) => {
-      if (error) {
-        console.error("Error en la consulta:", error);
-        res.status(500).json({ message: "Error al obtener el registro" });
-      } else {
-        if (results.length === 0) {
-          res.status(404).json({ message: "Registro no encontrado o eliminado" });
-        } else {
-          res.json(results[0]);
-        }
-      }
+ServidorWeb.get("/registros/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [results] = await pool.query(
+      `SELECT dni, provincia, departamento, municipio, localidad, id, persona_id, usuario_id, ubicacion_id, fecha, hora, alias, imagenes, habilitado, 
+      eliminado, causa, tipo, descripcion, comisaria_id 
+       FROM registros_detenidos
+       WHERE id = ? AND eliminado = false`,
+      [id]
+    );
+    if (results.length === 0) {
+      res.status(404).json({ message: "Registro no encontrado o eliminado" });
+    } else {
+      res.json(results[0]);
     }
-  );
+  } catch (error) {
+    console.error("Error en la consulta:", error);
+    res.status(500).json({ message: "Error al obtener el registro" });
+  }
 });
 
+ServidorWeb.get('/paises', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM pais');
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+ServidorWeb.get('/provincias/:cod_pais', async (req, res) => {
+  const { cod_pais } = req.params;
+  try {
+    const [rows] = await pool.query('SELECT * FROM provincias WHERE id_pais = ?', [cod_pais]);
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+ServidorWeb.get('/departamentos/:cod_pcia', async (req, res) => {
+  const { cod_pcia } = req.params;
+  try {
+    const [rows] = await pool.query('SELECT * FROM departamentos WHERE id_pcia = ?', [cod_pcia]);
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+ServidorWeb.get('/municipios/:cod_depto', async (req, res) => {
+  const { cod_depto } = req.params;
+  try {
+    const [rows] = await pool.query('SELECT * FROM municipios WHERE id_depto = ?', [cod_depto]);
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+ServidorWeb.get('/localidades/:cod_agl', async (req, res) => {
+  const { cod_agl } = req.params;
+  try {
+    const [rows] = await pool.query('SELECT * FROM localidades WHERE id_municipio = ?', [cod_agl]);
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 ServidorWeb.listen(PORT, () => {
   console.log("Application is running on port", PORT);
