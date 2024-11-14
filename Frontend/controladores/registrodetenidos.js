@@ -16,11 +16,11 @@ function buscarDNI() {
 
   // Realizar la llamada al servidor para obtener los datos del detenido por DNI
   fetch(`http://localhost:3001/personas/${dni}`).then(response => {
-      if (!response.ok) {
-        throw new Error('Persona no encontrada o eliminada');
-      }
-      return response.json();
-    })
+    if (!response.ok) {
+      throw new Error('Persona no encontrada o eliminada');
+    }
+    return response.json();
+  })
     .then(data => {
       // Verificar si la persona ya está cargada en la base de datos
       if (data.fecha_creacion) {
@@ -87,8 +87,6 @@ function buscarDNI() {
     });
 }
 
-
-// Espera hasta que Pica esté disponible
 document.getElementById('imagenes').addEventListener('change', async function(event) {
   const files = Array.from(event.target.files);
   const previewContainer = document.getElementById('preview-container');
@@ -147,16 +145,37 @@ document.getElementById('imagenes').addEventListener('change', async function(ev
 
     // Convertir el canvas a un Blob para compresión
     canvas.toBlob((blob) => {
-      // Crear URL para vista previa
-      const previewImage = document.createElement('img');
-      previewImage.src = URL.createObjectURL(blob);
-      previewImage.style.width = '150px'; // Tamaño de vista previa
-      previewImage.style.height = '150px';
-      previewImage.classList.add('thumbnail'); // Agrega clase para estilo si lo necesitas
+      // Crear contenedor para la imagen de vista previa y el botón de eliminar
+      const previewImage = document.createElement('div');
+      previewImage.classList.add('preview-image');
+      
+      const imgElement = document.createElement('img');
+      imgElement.src = URL.createObjectURL(blob);
+      imgElement.style.width = '150px'; // Tamaño de vista previa
+      imgElement.style.height = '150px';
+      imgElement.classList.add('thumbnail'); // Agrega clase para estilo si lo necesitas
+      
+      const removeButton = document.createElement('button');
+      removeButton.textContent = 'x';
+      removeButton.classList.add('remove-btn');
+      removeButton.addEventListener('click', () => {
+        previewContainer.removeChild(previewImage);
+        updateImageCount();
+      });
+
+      previewImage.appendChild(imgElement);
+      previewImage.appendChild(removeButton);
       previewContainer.appendChild(previewImage);
+      updateImageCount();
     }, 'image/jpeg', 0.8); // Calidad de compresión (0 a 1)
   }
 });
+
+function updateImageCount() {
+  const previewContainer = document.getElementById('preview-container');
+  const imageCount = previewContainer.getElementsByClassName('preview-image').length;
+  document.getElementById('image-count').textContent = `Imágenes restantes: ${imageCount}`;
+}
 
 
 
