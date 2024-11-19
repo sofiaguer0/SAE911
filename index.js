@@ -18,7 +18,7 @@ const pool = mysql.createPool({
   port: 3306,
   database: 'sae_911',
   user: 'root',
-  password: ''
+  password: '12345678'
 });
 
 //GET USUARIOS FUNCIONA//
@@ -134,6 +134,43 @@ ServidorWeb.get('/localidades/:cod_agl', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+
+
+
+//////////////post/////////////
+ServidorWeb.post("/registros", async (req, res) => {
+  const {
+    id, dni, provincia_id, departamento_id, municipio_id, localidad_id, persona_id, usuario_id, ubicacion_id, comisaria_id, fecha, hora, horaregistro, alias, causa, tipo, descripcion, habilitado, eliminado, imagenes
+  } = req.body;
+
+  try {
+    const [result] = await pool.query(
+      `INSERT INTO registros_detenidos (
+        id, dni, provincia_id, departamento_id, municipio_id, localidad_id, persona_id, usuario_id, ubicacion_id, comisaria_id, fecha, hora, horaregistro, alias, causa, tipo, descripcion, habilitado, eliminado, imagenes, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+      [
+        id, dni, provincia_id, departamento_id, municipio_id, localidad_id, persona_id, usuario_id, ubicacion_id, comisaria_id, fecha, hora, horaregistro, alias, causa, tipo, descripcion, habilitado, eliminado, imagenes
+      ]
+    );
+
+    res.status(201).json({
+      message: "Registro creado correctamente",
+      id: result.insertId
+    });
+  } catch (error) {
+    console.error("Error en la inserción:", error);
+    res.status(500).json({ message: "Error al crear el registro", error: error.message });
+  }
+});
+
+
+
+
+
+
+
+
 
 ServidorWeb.listen(PORT, () => {
   console.log("Application is running on port", PORT);
