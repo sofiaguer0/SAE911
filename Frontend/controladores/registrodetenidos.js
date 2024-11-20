@@ -15,11 +15,10 @@ function buscarDNI() {
   }}
 
   // Realizar la llamada al servidor para obtener los datos del detenido por DNI
-<<<<<<< HEAD
   fetch(`http://localhost:3001/personas/${dni}`).then(response => {
     if (!response.ok) {
       throw new Error('Persona no encontrada o eliminada');
-    }
+    }z
     return response.json();
   })
     .then(data => {
@@ -52,70 +51,6 @@ function buscarDNI() {
           } else if (result.dismiss === Swal.DismissReason.cancel) {
             // Limpiar el campo de DNI para registrar uno nuevo
             dniInput.value = '';
-=======
-  fetch(`http://localhost:3001/personas/${dni}`)// Función para buscar DNI
-  function buscarDNI() {
-    const dniInput = document.getElementById("dni");
-    const dni = dniInput.value.trim();
-  
-    // Verifica que el DNI ingresado no esté vacío
-    if (!dni) {
-      Swal.fire({
-        title: 'Error',
-        text: 'Por favor ingrese un DNI.',
-        icon: 'error',
-        confirmButtonText: 'Aceptar'
-      });
-      return;
-    }
-  
-    // Realizar la llamada al servidor para obtener los datos del detenido por DNI
-    fetch(`http://localhost:3001/personas/${dni}`).then(response => {
-      if (!response.ok) {
-        throw new Error('Persona no encontrada o eliminada');
-      }
-      return response.json();
-    })
-      .then(data => {
-        // Verificar si la persona ya está cargada en la base de datos
-        if (data) {
-          Swal.fire({
-            title: 'Persona ya registrada',
-            html: `
-              <p>DNI: ${data.dni}</p>
-              <p>Nombres: ${data.nombres}</p>
-              <p>Apellidos: ${data.apellidos}</p>
-              <p>Fecha de Nacimiento: ${data.fecha_nacimiento}</p>
-              <p>Habilitado: ${data.habilitado ? 'Sí' : 'No'}</p>
-              <p>Fecha de Creación: ${data.fecha_creacion}</p>
-              <p>Usuario de Creación: ${data.usuario_creacion}</p>
-            `,
-            icon: 'info',
-            showCancelButton: true,
-            confirmButtonText: 'Continuar',
-            cancelButtonText: 'Registrar Nuevo Detenido'
-          }).then((result) => {
-            if (result.isConfirmed) {
-              // Acción de "Continuar"
-              Swal.fire({
-                title: 'Continuando...',
-                text: 'Puede proceder con las opciones disponibles.',
-                icon: 'success'
-              });
-            } else if (result.dismiss === Swal.DismissReason.cancel) {
-              // Limpiar el campo de DNI para registrar uno nuevo
-              dniInput.value = '';
-            }
-          });
-        }
-      })
-      .catch(error => {
-        console.error('Error al buscar el DNI en personas:', error);
-        // Buscar en registros_detenidos
-        fetch(`http://localhost:3001/registros_detenidos/${dni}`).then(response => {
-          if (!response.ok) {
-            throw new Error('Detenido no encontrado en registros');
->>>>>>> 5e0340a037bc9083427c8d72fe43ea78350ff863
           }
           return response.json();
         })
@@ -154,14 +89,10 @@ function buscarDNI() {
             });
           });
       });
-  }
+    
   
 
-<<<<<<< HEAD
 document.getElementById('imagenes').addEventListener('change', async function(event) {
-=======
-document.getElementById('imagenes').addEventListener('change', async function (event) {
->>>>>>> 5e0340a037bc9083427c8d72fe43ea78350ff863
   const files = Array.from(event.target.files);
   const previewContainer = document.getElementById('preview-container');
   previewContainer.innerHTML = ''; // Limpiar vistas previas anteriores
@@ -222,21 +153,13 @@ document.getElementById('imagenes').addEventListener('change', async function (e
       // Crear contenedor para la imagen de vista previa y el botón de eliminar
       const previewImage = document.createElement('div');
       previewImage.classList.add('preview-image');
-<<<<<<< HEAD
       
-=======
-
->>>>>>> 5e0340a037bc9083427c8d72fe43ea78350ff863
       const imgElement = document.createElement('img');
       imgElement.src = URL.createObjectURL(blob);
       imgElement.style.width = '150px'; // Tamaño de vista previa
       imgElement.style.height = '150px';
       imgElement.classList.add('thumbnail'); // Agrega clase para estilo si lo necesitas
-<<<<<<< HEAD
       
-=======
-
->>>>>>> 5e0340a037bc9083427c8d72fe43ea78350ff863
       const removeButton = document.createElement('button');
       removeButton.textContent = 'x';
       removeButton.classList.add('remove-btn');
@@ -259,36 +182,6 @@ function updateImageCount() {
   document.getElementById('image-count').textContent = `Imágenes restantes: ${imageCount}`;
 }
 
-<<<<<<< HEAD
-=======
-
-
-// Agregar al inicio del documento, después de las funciones existentes
-
-document.addEventListener('DOMContentLoaded', function () {
-  // Establecer fecha máxima como hoy
-  const fechaInput = document.getElementById('fecha');
-  const today = new Date();
-  const formattedDate = today.toISOString().split('T')[0];
-  fechaInput.setAttribute('max', formattedDate);
-
-  // Establecer la hora actual del sistema automáticamente
-  const horaRegistro = new Date().toLocaleTimeString('es-AR', {
-    hour12: false,
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-
-  // Agregar un campo oculto para la hora de registro
-  const horaRegistroInput = document.createElement('input');
-  horaRegistroInput.type = 'hidden';
-  horaRegistroInput.id = 'hora_registro';
-  horaRegistroInput.value = horaRegistro;
-  document.querySelector('form').appendChild(horaRegistroInput);
-
-});
-
->>>>>>> 5e0340a037bc9083427c8d72fe43ea78350ff863
 
 
 // Función para limpiar el campo de DNI
