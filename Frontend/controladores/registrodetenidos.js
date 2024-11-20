@@ -118,7 +118,7 @@ function buscarDNI() {
   }
   
 
-document.getElementById('imagenes').addEventListener('change', async function (event) {
+document.getElementById('imagenes').addEventListener('change', async function(event) {
   const files = Array.from(event.target.files);
   const previewContainer = document.getElementById('preview-container');
   previewContainer.innerHTML = ''; // Limpiar vistas previas anteriores
@@ -179,13 +179,13 @@ document.getElementById('imagenes').addEventListener('change', async function (e
       // Crear contenedor para la imagen de vista previa y el botón de eliminar
       const previewImage = document.createElement('div');
       previewImage.classList.add('preview-image');
-
+      
       const imgElement = document.createElement('img');
       imgElement.src = URL.createObjectURL(blob);
       imgElement.style.width = '150px'; // Tamaño de vista previa
       imgElement.style.height = '150px';
       imgElement.classList.add('thumbnail'); // Agrega clase para estilo si lo necesitas
-
+      
       const removeButton = document.createElement('button');
       removeButton.textContent = 'x';
       removeButton.classList.add('remove-btn');
@@ -207,33 +207,6 @@ function updateImageCount() {
   const imageCount = previewContainer.getElementsByClassName('preview-image').length;
   document.getElementById('image-count').textContent = `Imágenes restantes: ${imageCount}`;
 }
-
-
-
-// Agregar al inicio del documento, después de las funciones existentes
-
-document.addEventListener('DOMContentLoaded', function () {
-  // Establecer fecha máxima como hoy
-  const fechaInput = document.getElementById('fecha');
-  const today = new Date();
-  const formattedDate = today.toISOString().split('T')[0];
-  fechaInput.setAttribute('max', formattedDate);
-
-  // Establecer la hora actual del sistema automáticamente
-  const horaRegistro = new Date().toLocaleTimeString('es-AR', {
-    hour12: false,
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-
-  // Agregar un campo oculto para la hora de registro
-  const horaRegistroInput = document.createElement('input');
-  horaRegistroInput.type = 'hidden';
-  horaRegistroInput.id = 'hora_registro';
-  horaRegistroInput.value = horaRegistro;
-  document.querySelector('form').appendChild(horaRegistroInput);
-
-});
 
 
 
