@@ -115,10 +115,10 @@ function buscarDNI() {
             });
           });
       });
-  }
+    
   
 
-document.getElementById('imagenes').addEventListener('change', async function (event) {
+document.getElementById('imagenes').addEventListener('change', async function(event) {
   const files = Array.from(event.target.files);
   const previewContainer = document.getElementById('preview-container');
   previewContainer.innerHTML = ''; // Limpiar vistas previas anteriores
@@ -179,13 +179,13 @@ document.getElementById('imagenes').addEventListener('change', async function (e
       // Crear contenedor para la imagen de vista previa y el botón de eliminar
       const previewImage = document.createElement('div');
       previewImage.classList.add('preview-image');
-
+      
       const imgElement = document.createElement('img');
       imgElement.src = URL.createObjectURL(blob);
       imgElement.style.width = '150px'; // Tamaño de vista previa
       imgElement.style.height = '150px';
       imgElement.classList.add('thumbnail'); // Agrega clase para estilo si lo necesitas
-
+      
       const removeButton = document.createElement('button');
       removeButton.textContent = 'x';
       removeButton.classList.add('remove-btn');
@@ -210,34 +210,208 @@ function updateImageCount() {
 
 
 
-// Agregar al inicio del documento, después de las funciones existentes
-
-document.addEventListener('DOMContentLoaded', function () {
-  // Establecer fecha máxima como hoy
-  const fechaInput = document.getElementById('fecha');
-  const today = new Date();
-  const formattedDate = today.toISOString().split('T')[0];
-  fechaInput.setAttribute('max', formattedDate);
-
-  // Establecer la hora actual del sistema automáticamente
-  const horaRegistro = new Date().toLocaleTimeString('es-AR', {
-    hour12: false,
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-
-  // Agregar un campo oculto para la hora de registro
-  const horaRegistroInput = document.createElement('input');
-  horaRegistroInput.type = 'hidden';
-  horaRegistroInput.id = 'hora_registro';
-  horaRegistroInput.value = horaRegistro;
-  document.querySelector('form').appendChild(horaRegistroInput);
-
-});
-
-
-
 // Función para limpiar el campo de DNI
 function limpiarDNI() {
   document.getElementById('dni').value = '';
 }
+
+
+
+// Obtener referencias a los elementos del DOM
+const provinciaSelect = document.getElementById('provincia');
+const departamentoSelect = document.getElementById('departamento');
+const localidadSelect = document.getElementById('localidad');
+
+// Función para cargar las provincias
+async function cargarProvincias() {
+  try {
+    // Asumiendo que tu servidor corre en el puerto 3000, ajusta según corresponda
+    const cod_pais = 200; // O el valor que necesites
+    const response = await fetch(`http://localhost:3001/provincias/${cod_pais}`);
+    
+    if (!response.ok) {
+      throw new Error('Error al cargar provincias');
+    }
+    
+    const provincias = await response.json();
+    const provinciaSelect = document.getElementById('provincia');
+    
+    // Limpiar opciones existentes
+    provinciaSelect.innerHTML = '<option value="">Seleccione una provincia</option>';
+    
+    provincias.forEach(provincia => {
+      const option = document.createElement('option');
+      option.value = provincia.cod_pcia;
+      option.text = provincia.nom_pcia;
+      provinciaSelect.add(option);
+    });
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+// Función para cargar las opciones de departamento
+async function cargarDepartamentos(cod_pcia) {
+  try {
+    console.log('Cargando departamentos para provincia:', cod_pcia);
+    const response = await fetch(`http://localhost:3001/departamentos/${cod_pcia}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const departamentos = await response.json();
+    console.log('Departamentos recibidos:', departamentos);
+    
+    const departamentoSelect = document.getElementById('departamento');
+    departamentoSelect.innerHTML = '<option value="" disabled selected>Seleccione departamento</option>';
+    
+    departamentos.forEach(departamento => {
+      const option = document.createElement('option');
+      option.value = departamento.cod_depto;
+      option.text = departamento.nom_depto;
+      departamentoSelect.add(option);
+    });
+    
+    departamentoSelect.disabled = false;
+  } catch (error) {
+    console.error('Error detallado al cargar departamentos:', error);
+    const departamentoSelect = document.getElementById('departamento');
+    departamentoSelect.innerHTML = '<option value="" disabled selected>Error al cargar departamentos</option>';
+    departamentoSelect.disabled = true;
+  }
+}
+// En el frontend
+async function cargarMunicipios(id_depto) {
+  try {
+    console.log('Iniciando carga de municipios para departamento:', id_depto);
+    
+    if (!id_depto) {
+      throw new Error('Código de departamento no proporcionado');
+    }
+
+    const url = `http://localhost:3001/municipios/${id_depto}`;
+    console.log('Intentando fetch a:', url);
+    
+    const response = await fetch(url);
+    
+    if (response.status === 404) {
+      const municipioSelect = document.getElementById('municipio');
+      municipioSelect.innerHTML = '<option value="" disabled selected>No hay municipios para este departamento</option>';
+      municipioSelect.disabled = true;
+      
+
+    }
+    
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+    
+    const municipios = await response.json();
+    console.log('Municipios recibidos:', municipios);
+    
+    const municipioSelect = document.getElementById('municipio');
+    municipioSelect.innerHTML = '<option value="" disabled selected>Seleccione municipio</option>';
+    
+    municipios.forEach(municipios => {
+      const option = document.createElement('option');
+      option.value = municipios.cod_agl;  // Ajusta según el nombre de tu columna
+      option.text = municipios.nom_agl;   // Ajusta según el nombre de tu columna
+      municipioSelect.add(option);
+    });
+    
+    municipioSelect.disabled = false;
+    
+    // Reseteamos el select de localidades
+    const localidadSelect = document.getElementById('localidad');
+    localidadSelect.innerHTML = '<option value="" disabled selected>Seleccione primero un municipio</option>';
+    localidadSelect.disabled = true;
+  } catch (error) {
+    console.error('Error detallado al cargar municipios:', error);
+    const municipioSelect = document.getElementById('municipio');
+    municipioSelect.innerHTML = '<option value="" disabled selected>Error al cargar municipios</option>';
+    municipioSelect.disabled = true;
+    
+    // También deshabilitamos el select de localidades
+    const localidadSelect = document.getElementById('localidad');
+    localidadSelect.innerHTML = '<option value="" disabled selected>Seleccione primero un municipio</option>';
+    localidadSelect.disabled = true;
+  }
+}
+
+
+async function cargarLocalidades(cod_agl) {
+  try {
+    console.log('Código de departamento seleccionado:', cod_agl); // Debug
+    
+    if (!cod_agl) {
+      throw new Error('Código de departamento no proporcionado');
+    }
+
+    const url = `http://localhost:3001/localidades/${cod_agl}`;
+    console.log('Intentando fetch a:', url); // Debug
+    
+    const response = await fetch(url);
+    console.log('Estado de la respuesta:', response.status); // Debug
+    
+    if (response.status === 404) {
+      const localidadSelect = document.getElementById('localidad');
+      localidadSelect.innerHTML = '<option value="" disabled selected>No hay localidades para este departamento</option>';
+      localidadSelect.disabled = true;
+      return;
+    }
+    
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+    
+    const localidades = await response.json();
+    console.log('Datos de localidades:', localidades); // Debug
+    
+    const localidadSelect = document.getElementById('localidad');
+    localidadSelect.innerHTML = '<option value="" disabled selected>Seleccione localidad</option>';
+    
+    localidades.forEach(localidades => {
+      const option = document.createElement('option');
+      option.value = localidades.cod_ase;
+      option.text = localidades.nombre;
+      localidadSelect.add(option);
+    });
+    
+    localidadSelect.disabled = false;
+  } catch (error) {
+    console.error('Error completo:', error);
+    const localidadSelect = document.getElementById('localidad');
+    localidadSelect.innerHTML = '<option value="" disabled selected>Error al cargar localidades</option>';
+    localidadSelect.disabled = true;
+  }
+}
+
+
+
+// Evento para cargar las provincias al cargar la página
+window.addEventListener('DOMContentLoaded', cargarProvincias);
+
+// Evento para cargar los departamentos cuando se selecciona una provincia
+provinciaSelect.addEventListener('change', (event) => {
+  const cod_pcia = event.target.value;
+  cargarDepartamentos(cod_pcia);
+  localidadSelect.disabled = true;
+});
+
+// Evento para cargar las localidades cuando se selecciona un departamento
+departamentoSelect.addEventListener('change', (event) => {
+  const cod_depto = event.target.value;
+  cargarLocalidades(cod_depto);
+});
+
+// Asegúrate de tener el evento change en el select de departamentos
+document.getElementById('departamento').addEventListener('change', function() {
+  const cod_depto = this.value;
+  if (cod_depto) {
+    cargarLocalidades(cod_depto);
+  } else {
+    const localidadSelect = document.getElementById('localidad');
+    localidadSelect.innerHTML = '<option value="" disabled selected>Seleccione primero un departamento</option>';
+    localidadSelect.disabled = true;
+  }
+});
