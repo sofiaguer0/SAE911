@@ -115,7 +115,7 @@ function buscarDNI() {
             });
           });
       });
-  }
+    
   
 
 document.getElementById('imagenes').addEventListener('change', async function(event) {
