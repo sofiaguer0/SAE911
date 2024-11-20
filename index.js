@@ -85,19 +85,10 @@ ServidorWeb.get("/registros/:id", async (req, res) => {
     res.status(500).json({ message: "Error al obtener el registro" });
   }
 });
-
-ServidorWeb.get('/paises', async (req, res) => {
-  try {
-    const [rows] = await pool.query('SELECT * FROM pais');
-    res.json(rows);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
 ServidorWeb.get('/provincias/:cod_pais', async (req, res) => {
   const { cod_pais } = req.params;
   try {
+    // Ahora usamos el parámetro cod_pais en la consulta
     const [rows] = await pool.query('SELECT * FROM provincias WHERE id_pais = ?', [cod_pais]);
     res.json(rows);
   } catch (error) {
@@ -108,33 +99,84 @@ ServidorWeb.get('/provincias/:cod_pais', async (req, res) => {
 ServidorWeb.get('/departamentos/:cod_pcia', async (req, res) => {
   const { cod_pcia } = req.params;
   try {
+    if (!cod_pcia) {
+      return res.status(400).json({ error: 'Se requiere código de provincia' });
+    }
+
     const [rows] = await pool.query('SELECT * FROM departamentos WHERE id_pcia = ?', [cod_pcia]);
+    
+    if (!rows || rows.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron departamentos para esta provincia' });
+    }
+    
     res.json(rows);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error al obtener departamentos:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
+// En el servidor
 ServidorWeb.get('/municipios/:cod_depto', async (req, res) => {
   const { cod_depto } = req.params;
   try {
+    if (!cod_depto) {
+      return res.status(400).json({ error: 'Se requiere código de departamento' });
+    }
+
+    console.log('Buscando municipios para departamento:', cod_depto); // Debug
+
     const [rows] = await pool.query('SELECT * FROM municipios WHERE id_depto = ?', [cod_depto]);
+    
+    if (!rows || rows.length === 0) {
+      console.log('No se encontraron municipios para el departamento:', cod_depto);
+      return res.status(404).json({ 
+        message: 'No se encontraron municipios para este departamento',
+        cod_depto: cod_depto
+      });
+    }
+    
+    console.log('Municipios encontrados:', rows);
     res.json(rows);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error al obtener municipios:', error);
+    res.status(500).json({ 
+      error: 'Error interno del servidor',
+      details: error.message 
+    });
   }
 });
 
-ServidorWeb.get('/localidades/:cod_agl', async (req, res) => {
-  const { cod_agl } = req.params;
+// En el servidor
+ServidorWeb.get('/localidades/:id_municipio', async (req, res) => {
+  const { id_municipio} = req.params;
   try {
-    const [rows] = await pool.query('SELECT * FROM localidades WHERE id_municipio = ?', [cod_agl]);
+    console.log('Código de departamento recibido:', id_municipio); // Debug
+
+    // Modificamos la consulta para ver si hay datos
+    const [rows] = await pool.query(
+      'SELECT * FROM localidades WHERE id_municipio = ? LIMIT 1',
+      [cod_depto]
+    );
+    
+    console.log('Resultados de la consulta:', rows); // Debug
+
+    if (!rows || rows.length === 0) {
+      return res.status(404).json({ 
+        message: 'No se encontraron localidades para este departamento',
+        cod_depto: cod_depto
+      });
+    }
+    
     res.json(rows);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error completo:', error);
+    res.status(500).json({ 
+      error: 'Error interno del servidor',
+      details: error.message 
+    });
   }
 });
-
 
 
 
