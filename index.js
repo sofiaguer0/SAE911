@@ -117,22 +117,22 @@ ServidorWeb.get('/departamentos/:cod_pcia', async (req, res) => {
 });
 
 // En el servidor
-ServidorWeb.get('/municipios/:cod_depto', async (req, res) => {
-  const { cod_depto } = req.params;
+ServidorWeb.get('/municipios/:id_depto', async (req, res) => {
+  const { id_depto } = req.params;
   try {
-    if (!cod_depto) {
+    if (!id_depto) {
       return res.status(400).json({ error: 'Se requiere código de departamento' });
     }
 
-    console.log('Buscando municipios para departamento:', cod_depto); // Debug
+    console.log('Buscando municipios para departamento:', id_depto); // Debug
 
-    const [rows] = await pool.query('SELECT * FROM municipios WHERE id_depto = ?', [cod_depto]);
+    const [rows] = await pool.query('SELECT * FROM municipios WHERE id_depto = ?', [id_depto]);
     
     if (!rows || rows.length === 0) {
-      console.log('No se encontraron municipios para el departamento:', cod_depto);
+      console.log('No se encontraron municipios para el departamento:', id_depto);
       return res.status(404).json({ 
         message: 'No se encontraron municipios para este departamento',
-        cod_depto: cod_depto
+        id_depto: id_depto
       });
     }
     
@@ -156,7 +156,7 @@ ServidorWeb.get('/localidades/:id_municipio', async (req, res) => {
     // Modificamos la consulta para ver si hay datos
     const [rows] = await pool.query(
       'SELECT * FROM localidades WHERE id_municipio = ? LIMIT 1',
-      [cod_depto]
+      [id_municipio]
     );
     
     console.log('Resultados de la consulta:', rows); // Debug
@@ -164,7 +164,7 @@ ServidorWeb.get('/localidades/:id_municipio', async (req, res) => {
     if (!rows || rows.length === 0) {
       return res.status(404).json({ 
         message: 'No se encontraron localidades para este departamento',
-        cod_depto: cod_depto
+        id_municipio: id_municipio
       });
     }
     

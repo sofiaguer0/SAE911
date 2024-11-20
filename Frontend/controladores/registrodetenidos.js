@@ -280,15 +280,74 @@ async function cargarDepartamentos(cod_pcia) {
     departamentoSelect.disabled = true;
   }
 }
-async function cargarLocalidades(cod_depto) {
+// En el frontend
+async function cargarMunicipios(id_depto) {
   try {
-    console.log('Código de departamento seleccionado:', cod_depto); // Debug
+    console.log('Iniciando carga de municipios para departamento:', id_depto);
     
-    if (!cod_depto) {
+    if (!id_depto) {
       throw new Error('Código de departamento no proporcionado');
     }
 
-    const url = `http://localhost:3001/localidades/${cod_depto}`;
+    const url = `http://localhost:3001/municipios/${id_depto}`;
+    console.log('Intentando fetch a:', url);
+    
+    const response = await fetch(url);
+    
+    if (response.status === 404) {
+      const municipioSelect = document.getElementById('municipio');
+      municipioSelect.innerHTML = '<option value="" disabled selected>No hay municipios para este departamento</option>';
+      municipioSelect.disabled = true;
+      
+
+    }
+    
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+    
+    const municipios = await response.json();
+    console.log('Municipios recibidos:', municipios);
+    
+    const municipioSelect = document.getElementById('municipio');
+    municipioSelect.innerHTML = '<option value="" disabled selected>Seleccione municipio</option>';
+    
+    municipios.forEach(municipios => {
+      const option = document.createElement('option');
+      option.value = municipios.cod_agl;  // Ajusta según el nombre de tu columna
+      option.text = municipios.nom_agl;   // Ajusta según el nombre de tu columna
+      municipioSelect.add(option);
+    });
+    
+    municipioSelect.disabled = false;
+    
+    // Reseteamos el select de localidades
+    const localidadSelect = document.getElementById('localidad');
+    localidadSelect.innerHTML = '<option value="" disabled selected>Seleccione primero un municipio</option>';
+    localidadSelect.disabled = true;
+  } catch (error) {
+    console.error('Error detallado al cargar municipios:', error);
+    const municipioSelect = document.getElementById('municipio');
+    municipioSelect.innerHTML = '<option value="" disabled selected>Error al cargar municipios</option>';
+    municipioSelect.disabled = true;
+    
+    // También deshabilitamos el select de localidades
+    const localidadSelect = document.getElementById('localidad');
+    localidadSelect.innerHTML = '<option value="" disabled selected>Seleccione primero un municipio</option>';
+    localidadSelect.disabled = true;
+  }
+}
+
+
+async function cargarLocalidades(cod_agl) {
+  try {
+    console.log('Código de departamento seleccionado:', cod_agl); // Debug
+    
+    if (!cod_agl) {
+      throw new Error('Código de departamento no proporcionado');
+    }
+
+    const url = `http://localhost:3001/localidades/${cod_agl}`;
     console.log('Intentando fetch a:', url); // Debug
     
     const response = await fetch(url);
@@ -311,10 +370,10 @@ async function cargarLocalidades(cod_depto) {
     const localidadSelect = document.getElementById('localidad');
     localidadSelect.innerHTML = '<option value="" disabled selected>Seleccione localidad</option>';
     
-    localidades.forEach(localidad => {
+    localidades.forEach(localidades => {
       const option = document.createElement('option');
-      option.value = localidad.cod_ase;
-      option.text = localidad.nombre;
+      option.value = localidades.cod_ase;
+      option.text = localidades.nombre;
       localidadSelect.add(option);
     });
     
@@ -327,67 +386,6 @@ async function cargarLocalidades(cod_depto) {
   }
 }
 
-// En el frontend
-async function cargarMunicipios(cod_depto) {
-  try {
-    console.log('Iniciando carga de municipios para departamento:', cod_depto);
-    
-    if (!cod_depto) {
-      throw new Error('Código de departamento no proporcionado');
-    }
-
-    const url = `http://localhost:3001/municipios/${cod_depto}`;
-    console.log('Intentando fetch a:', url);
-    
-    const response = await fetch(url);
-    
-    if (response.status === 404) {
-      const municipioSelect = document.getElementById('municipio');
-      municipioSelect.innerHTML = '<option value="" disabled selected>No hay municipios para este departamento</option>';
-      municipioSelect.disabled = true;
-      
-      // También deshabilitamos el select de localidades ya que depende del municipio
-      const localidadSelect = document.getElementById('localidad');
-      localidadSelect.innerHTML = '<option value="" disabled selected>Seleccione primero un municipio</option>';
-      localidadSelect.disabled = true;
-      return;
-    }
-    
-    if (!response.ok) {
-      throw new Error(`Error HTTP: ${response.status}`);
-    }
-    
-    const municipios = await response.json();
-    console.log('Municipios recibidos:', municipios);
-    
-    const municipioSelect = document.getElementById('municipio');
-    municipioSelect.innerHTML = '<option value="" disabled selected>Seleccione municipio</option>';
-    
-    municipios.forEach(municipio => {
-      const option = document.createElement('option');
-      option.value = municipio.cod_municipio;  // Ajusta según el nombre de tu columna
-      option.text = municipio.nom_municipio;   // Ajusta según el nombre de tu columna
-      municipioSelect.add(option);
-    });
-    
-    municipioSelect.disabled = false;
-    
-    // Reseteamos el select de localidades
-    const localidadSelect = document.getElementById('localidad');
-    localidadSelect.innerHTML = '<option value="" disabled selected>Seleccione primero un municipio</option>';
-    localidadSelect.disabled = true;
-  } catch (error) {
-    console.error('Error detallado al cargar municipios:', error);
-    const municipioSelect = document.getElementById('municipio');
-    municipioSelect.innerHTML = '<option value="" disabled selected>Error al cargar municipios</option>';
-    municipioSelect.disabled = true;
-    
-    // También deshabilitamos el select de localidades
-    const localidadSelect = document.getElementById('localidad');
-    localidadSelect.innerHTML = '<option value="" disabled selected>Seleccione primero un municipio</option>';
-    localidadSelect.disabled = true;
-  }
-}
 
 
 // Evento para cargar las provincias al cargar la página
