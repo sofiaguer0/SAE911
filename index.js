@@ -18,7 +18,7 @@ const pool = mysql.createPool({
   port: 3306,
   database: 'sae_911',
   user: 'root',
-  password: '12345678'
+  password: ''
 });
 
 //GET USUARIOS FUNCIONA//
