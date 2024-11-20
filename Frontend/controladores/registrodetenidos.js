@@ -12,9 +12,28 @@ function buscarDNI() {
       confirmButtonText: 'Aceptar'
     });
     return;
-  }}
+  }
+}
+
+// Realizar la llamada al servidor para obtener los datos del detenido por DNI
+fetch(`http://localhost:3001/personas/${dni}`)// Función para buscar DNI
+function buscarDNI() {
+  const dniInput = document.getElementById("dni");
+  const dni = dniInput.value.trim();
+
+  // Verifica que el DNI ingresado no esté vacío
+  if (!dni) {
+    Swal.fire({
+      title: 'Error',
+      text: 'Por favor ingrese un DNI.',
+      icon: 'error',
+      confirmButtonText: 'Aceptar'
+    });
+    return;
+  }
 
   // Realizar la llamada al servidor para obtener los datos del detenido por DNI
+<<<<<<< Updated upstream
   fetch(`http://localhost:3001/personas/${dni}`)// Función para buscar DNI
   function buscarDNI() {
     const dniInput = document.getElementById("dni");
@@ -44,6 +63,20 @@ function buscarDNI() {
           Swal.fire({
             title: 'Persona ya registrada',
             html: `
+=======
+  fetch(`http://localhost:3001/personas/${dni}`).then(response => {
+    if (!response.ok) {
+      throw new Error('Persona no encontrada o eliminada');
+    }
+    return response.json();
+  })
+    .then(data => {
+      // Verificar si la persona ya está cargada en la base de datos
+      if (data) {
+        Swal.fire({
+          title: 'Persona ya registrada',
+          html: `
+>>>>>>> Stashed changes
               <p>DNI: ${data.dni}</p>
               <p>Nombres: ${data.nombres}</p>
               <p>Apellidos: ${data.apellidos}</p>
@@ -52,6 +85,7 @@ function buscarDNI() {
               <p>Fecha de Creación: ${data.fecha_creacion}</p>
               <p>Usuario de Creación: ${data.usuario_creacion}</p>
             `,
+<<<<<<< Updated upstream
             icon: 'info',
             showCancelButton: true,
             confirmButtonText: 'Continuar',
@@ -77,14 +111,41 @@ function buscarDNI() {
         fetch(`http://localhost:3001/registros_detenidos/${dni}`).then(response => {
           if (!response.ok) {
             throw new Error('Detenido no encontrado en registros');
+=======
+          icon: 'info',
+          showCancelButton: true,
+          confirmButtonText: 'Continuar',
+          cancelButtonText: 'Registrar Nuevo Detenido'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Acción de "Continuar"
+            Swal.fire({
+              title: 'Continuando...',
+              text: 'Puede proceder con las opciones disponibles.',
+              icon: 'success'
+            });
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            // Limpiar el campo de DNI para registrar uno nuevo
+            dniInput.value = '';
+>>>>>>> Stashed changes
           }
-          return response.json();
-        })
-          .then(data => {
-            if (data) {
-              Swal.fire({
-                title: 'Detenido Encontrado en Registros',
-                html: `
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error al buscar el DNI en personas:', error);
+      // Buscar en registros_detenidos
+      fetch(`http://localhost:3001/registros_detenidos/${dni}`).then(response => {
+        if (!response.ok) {
+          throw new Error('Detenido no encontrado en registros');
+        }
+        return response.json();
+      })
+        .then(data => {
+          if (data) {
+            Swal.fire({
+              title: 'Detenido Encontrado en Registros',
+              html: `
                   <p>DNI: ${data.dni}</p>
                   <p>Nombres: ${data.nombres}</p>
                   <p>Apellidos: ${data.apellidos}</p>
@@ -93,32 +154,43 @@ function buscarDNI() {
                   <p>Fecha de Creación: ${data.fecha_creacion}</p>
                   <p>Usuario de Creación: ${data.usuario_creacion}</p>
                 `,
-                icon: 'info',
-                confirmButtonText: 'Aceptar'
-              });
-            } else {
-              Swal.fire({
-                title: 'DNI no encontrado',
-                text: `El DNI ${dni} no está cargado en ninguna de las bases.`,
-                icon: 'error',
-                confirmButtonText: 'Aceptar'
-              });
-            }
-          })
-          .catch(error => {
-            console.error('Error al buscar el DNI en registros_detenidos:', error);
+              icon: 'info',
+              confirmButtonText: 'Aceptar'
+            });
+          } else {
             Swal.fire({
-              title: 'Error',
-              text: 'Hubo un problema al buscar el detenido.',
+              title: 'DNI no encontrado',
+              text: `El DNI ${dni} no está cargado en ninguna de las bases.`,
               icon: 'error',
               confirmButtonText: 'Aceptar'
             });
+          }
+        })
+        .catch(error => {
+          console.error('Error al buscar el DNI en registros_detenidos:', error);
+          Swal.fire({
+            title: 'Error',
+            text: 'Hubo un problema al buscar el detenido.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
           });
-      });
-  }
-  
+        });
+    });
+}
 
+// Configurar fecha máxima como hoy
+document.addEventListener('DOMContentLoaded', () => {
+  const fechaInput = document.getElementById('fecha');
+  const hoy = new Date().toISOString().split('T')[0];
+  fechaInput.setAttribute('max', hoy);
+});
+
+
+<<<<<<< Updated upstream
 document.getElementById('imagenes').addEventListener('change', async function(event) {
+=======
+document.getElementById('imagenes').addEventListener('change', async function (event) {
+>>>>>>> Stashed changes
   const files = Array.from(event.target.files);
   const previewContainer = document.getElementById('preview-container');
   previewContainer.innerHTML = ''; // Limpiar vistas previas anteriores
@@ -179,13 +251,21 @@ document.getElementById('imagenes').addEventListener('change', async function(ev
       // Crear contenedor para la imagen de vista previa y el botón de eliminar
       const previewImage = document.createElement('div');
       previewImage.classList.add('preview-image');
+<<<<<<< Updated upstream
       
+=======
+
+>>>>>>> Stashed changes
       const imgElement = document.createElement('img');
       imgElement.src = URL.createObjectURL(blob);
       imgElement.style.width = '150px'; // Tamaño de vista previa
       imgElement.style.height = '150px';
       imgElement.classList.add('thumbnail'); // Agrega clase para estilo si lo necesitas
+<<<<<<< Updated upstream
       
+=======
+
+>>>>>>> Stashed changes
       const removeButton = document.createElement('button');
       removeButton.textContent = 'x';
       removeButton.classList.add('remove-btn');
