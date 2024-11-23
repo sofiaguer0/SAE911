@@ -115,7 +115,7 @@ function buscarDNI() {
             });
           });
       });
-    
+  }
   
 
 document.getElementById('imagenes').addEventListener('change', async function(event) {
@@ -216,16 +216,15 @@ function limpiarDNI() {
 }
 
 
-
+//PARTE DE LOS SELECTTTTTTTTTTT 
 // Obtener referencias a los elementos del DOM
 const provinciaSelect = document.getElementById('provincia');
 const departamentoSelect = document.getElementById('departamento');
 const localidadSelect = document.getElementById('localidad');
-
+const municipioSelect = document.getElementById('municipio');
 // Función para cargar las provincias
 async function cargarProvincias() {
   try {
-    // Asumiendo que tu servidor corre en el puerto 3000, ajusta según corresponda
     const cod_pais = 200; // O el valor que necesites
     const response = await fetch(`http://localhost:3001/provincias/${cod_pais}`);
     
@@ -245,6 +244,13 @@ async function cargarProvincias() {
       option.text = provincia.nom_pcia;
       provinciaSelect.add(option);
     });
+
+    // Establecer Catamarca como seleccionada
+    provinciaSelect.value = '10';
+    
+    // Disparar el evento change
+    provinciaSelect.dispatchEvent(new Event('change'));
+    
   } catch (error) {
     console.error('Error:', error);
   }
@@ -280,111 +286,78 @@ async function cargarDepartamentos(cod_pcia) {
     departamentoSelect.disabled = true;
   }
 }
-// En el frontend
 async function cargarMunicipios(id_depto) {
   try {
-    console.log('Iniciando carga de municipios para departamento:', id_depto);
-    
-    if (!id_depto) {
-      throw new Error('Código de departamento no proporcionado');
-    }
-
-    const url = `http://localhost:3001/municipios/${id_depto}`;
-    console.log('Intentando fetch a:', url);
-    
-    const response = await fetch(url);
-    
-    if (response.status === 404) {
-      const municipioSelect = document.getElementById('municipio');
-      municipioSelect.innerHTML = '<option value="" disabled selected>No hay municipios para este departamento</option>';
-      municipioSelect.disabled = true;
-      
-
-    }
+    console.log('Cargando municipios para departamento:', id_depto);
+    const response = await fetch(`http://localhost:3001/municipios/${id_depto}`);
     
     if (!response.ok) {
-      throw new Error(`Error HTTP: ${response.status}`);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
     
     const municipios = await response.json();
-    console.log('Municipios recibidos:', municipios);
+    console.log('Municipios recibidos (cantidad):', municipios.length); // Ver cuántos municipios recibimos
+    console.log('Datos completos de municipios:', JSON.stringify(municipios, null, 2)); // Ver estructura completa
     
     const municipioSelect = document.getElementById('municipio');
-    municipioSelect.innerHTML = '<option value="" disabled selected>Seleccione municipio</option>';
+    municipioSelect.innerHTML = '<option value="" disabled selected>Seleccione departamento</option>';
     
-    municipios.forEach(municipios => {
-      const option = document.createElement('option');
-      option.value = municipios.cod_agl;  // Ajusta según el nombre de tu columna
-      option.text = municipios.nom_agl;   // Ajusta según el nombre de tu columna
-      municipioSelect.add(option);
-    });
+    if (Array.isArray(municipios) && municipios.length > 0) {
+      municipios.forEach((municipio, index) => {
+        console.log(`Procesando municipio ${index + 1}:`, municipio);
+        const option = document.createElement('option');
+        option.value = municipio.cod_agl;
+        option.text = municipio.nom_agl;
+        console.log(`Creando opción: value=${option.value}, text=${option.text}`);
+        municipioSelect.add(option);
+      });
+    }
     
     municipioSelect.disabled = false;
     
-    // Reseteamos el select de localidades
-    const localidadSelect = document.getElementById('localidad');
-    localidadSelect.innerHTML = '<option value="" disabled selected>Seleccione primero un municipio</option>';
-    localidadSelect.disabled = true;
+    // Verificar el resultado final
+    console.log('Número final de opciones en el select:', municipioSelect.options.length);
+    
   } catch (error) {
     console.error('Error detallado al cargar municipios:', error);
     const municipioSelect = document.getElementById('municipio');
     municipioSelect.innerHTML = '<option value="" disabled selected>Error al cargar municipios</option>';
     municipioSelect.disabled = true;
-    
-    // También deshabilitamos el select de localidades
-    const localidadSelect = document.getElementById('localidad');
-    localidadSelect.innerHTML = '<option value="" disabled selected>Seleccione primero un municipio</option>';
-    localidadSelect.disabled = true;
   }
 }
 
 
-async function cargarLocalidades(cod_agl) {
+async function cargarLocalidades(id_municipio) {
   try {
-    console.log('Código de departamento seleccionado:', cod_agl); // Debug
-    
-    if (!cod_agl) {
-      throw new Error('Código de departamento no proporcionado');
-    }
-
-    const url = `http://localhost:3001/localidades/${cod_agl}`;
-    console.log('Intentando fetch a:', url); // Debug
-    
-    const response = await fetch(url);
-    console.log('Estado de la respuesta:', response.status); // Debug
-    
-    if (response.status === 404) {
-      const localidadSelect = document.getElementById('localidad');
-      localidadSelect.innerHTML = '<option value="" disabled selected>No hay localidades para este departamento</option>';
-      localidadSelect.disabled = true;
-      return;
-    }
+    console.log('Cargando localidades para municipio:', id_municipio);
+    const response = await fetch(`http://localhost:3001/localidades/${id_municipio}`);
     
     if (!response.ok) {
-      throw new Error(`Error HTTP: ${response.status}`);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
     
     const localidades = await response.json();
-    console.log('Datos de localidades:', localidades); // Debug
+    console.log('localidades recibidas:', localidades);
     
     const localidadSelect = document.getElementById('localidad');
     localidadSelect.innerHTML = '<option value="" disabled selected>Seleccione localidad</option>';
     
-    localidades.forEach(localidades => {
+    localidades.forEach(localidad => {
       const option = document.createElement('option');
-      option.value = localidades.cod_ase;
-      option.text = localidades.nombre;
+      option.value = localidad.cod_ase;
+      option.text = localidad.nombre;
       localidadSelect.add(option);
     });
     
     localidadSelect.disabled = false;
   } catch (error) {
-    console.error('Error completo:', error);
+    console.error('Error detallado al cargar localidades:', error);
     const localidadSelect = document.getElementById('localidad');
     localidadSelect.innerHTML = '<option value="" disabled selected>Error al cargar localidades</option>';
     localidadSelect.disabled = true;
   }
 }
+
 
 
 
@@ -401,17 +374,19 @@ provinciaSelect.addEventListener('change', (event) => {
 // Evento para cargar las localidades cuando se selecciona un departamento
 departamentoSelect.addEventListener('change', (event) => {
   const cod_depto = event.target.value;
-  cargarLocalidades(cod_depto);
+  cargarMunicipios(cod_depto);
 });
 
-// Asegúrate de tener el evento change en el select de departamentos
-document.getElementById('departamento').addEventListener('change', function() {
-  const cod_depto = this.value;
-  if (cod_depto) {
-    cargarLocalidades(cod_depto);
-  } else {
-    const localidadSelect = document.getElementById('localidad');
-    localidadSelect.innerHTML = '<option value="" disabled selected>Seleccione primero un departamento</option>';
-    localidadSelect.disabled = true;
-  }
+// Evento para cargar las localidades cuando se selecciona un departamento
+municipioSelect.addEventListener('change', (event) => {
+  const cod_agl = event.target.value;
+  cargarLocalidades(cod_agl);
 });
+localidadSelect.addEventListener('change', (event) => {
+  const localidadSeleccionada = event.target.value;
+  console.log('Localidad seleccionada:', localidadSeleccionada);
+  // Aquí puedes agregar cualquier lógica que necesites cuando se selecciona una localidad
+});
+
+
+

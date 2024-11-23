@@ -26,7 +26,7 @@ ServidorWeb.get("/usuarios/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const [results] = await pool.query(
-      `SELECT id, persona_id, nombre, email, rol, imagen, comisaria_id, habilitado, fecha_creacion, usuario_creacion
+      `SELECT  persona_id, nombre, email, rol, imagen, comisaria_id, habilitado, fecha_creacion, usuario_creacion
        FROM usuarios
        WHERE id = ? AND eliminado = false`,
       [id]
@@ -47,7 +47,7 @@ ServidorWeb.get("/personas/:dni", async (req, res) => {
   const { dni } = req.params;
   try {
     const [results] = await pool.query(
-      `SELECT id, dni, cuil, nombres, apellidos, genero, fecha_nacimiento, habilitado, 
+      `SELECT dni, cuil, nombres, apellidos, genero, fecha_nacimiento, habilitado, 
               fecha_creacion, usuario_creacion, eliminado, fecha_eliminacion, usuario_eliminacion
        FROM personas
        WHERE dni = ? AND eliminado = false`,
@@ -64,17 +64,11 @@ ServidorWeb.get("/personas/:dni", async (req, res) => {
   }
 });
 
-//REGISTROS_DETENIDOS FUNCIONAAAA//
 ServidorWeb.get("/registros/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const [results] = await pool.query(
-      `SELECT dni, provincia, departamento, municipio, localidad, id, persona_id, usuario_id, ubicacion_id, fecha, hora, alias, imagenes, habilitado, 
-      eliminado, causa, tipo, descripcion, comisaria_id 
-       FROM registros_detenidos
-       WHERE id = ? AND eliminado = false`,
-      [id]
-    );
+      `SELECT dni, provincia_id, departamento_id, municipio_id, localidad_id, persona_id, usuario_id, comisaria_id, fecha, hora, fecha_registro, hora_registro, alias, causa, tipo, descripcion, habilitado, eliminado, imagenes, latitud longitud, geo_dato, pais_id FROM registros_detenidos WHERE id = ? AND eliminado = false`, [id]);
     if (results.length === 0) {
       res.status(404).json({ message: "Registro no encontrado o eliminado" });
     } else {
@@ -82,9 +76,15 @@ ServidorWeb.get("/registros/:id", async (req, res) => {
     }
   } catch (error) {
     console.error("Error en la consulta:", error);
-    res.status(500).json({ message: "Error al obtener el registro" });
+    res.status(500).json({ 
+      message: "Error al obtener el registro",
+      error: error.message 
+    });
   }
 });
+
+
+
 ServidorWeb.get('/provincias/:cod_pais', async (req, res) => {
   const { cod_pais } = req.params;
   try {
@@ -116,7 +116,6 @@ ServidorWeb.get('/departamentos/:cod_pcia', async (req, res) => {
   }
 });
 
-// En el servidor
 ServidorWeb.get('/municipios/:id_depto', async (req, res) => {
   const { id_depto } = req.params;
   try {
@@ -124,75 +123,51 @@ ServidorWeb.get('/municipios/:id_depto', async (req, res) => {
       return res.status(400).json({ error: 'Se requiere código de departamento' });
     }
 
-    console.log('Buscando municipios para departamento:', id_depto); // Debug
-
     const [rows] = await pool.query('SELECT * FROM municipios WHERE id_depto = ?', [id_depto]);
     
     if (!rows || rows.length === 0) {
-      console.log('No se encontraron municipios para el departamento:', id_depto);
-      return res.status(404).json({ 
-        message: 'No se encontraron municipios para este departamento',
-        id_depto: id_depto
-      });
+      return res.status(404).json({ message: 'No se encontraron municipios para este departamento' });
     }
     
-    console.log('Municipios encontrados:', rows);
     res.json(rows);
   } catch (error) {
     console.error('Error al obtener municipios:', error);
-    res.status(500).json({ 
-      error: 'Error interno del servidor',
-      details: error.message 
-    });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
-// En el servidor
 ServidorWeb.get('/localidades/:id_municipio', async (req, res) => {
-  const { id_municipio} = req.params;
+  const { id_municipio } = req.params;
   try {
-    console.log('Código de departamento recibido:', id_municipio); // Debug
+    if (!id_municipio) {
+      return res.status(400).json({ error: 'Se requiere código de municipio' });
+    }
 
-    // Modificamos la consulta para ver si hay datos
-    const [rows] = await pool.query(
-      'SELECT * FROM localidades WHERE id_municipio = ? LIMIT 1',
-      [id_municipio]
-    );
+    const [rows] = await pool.query('SELECT * FROM localidades WHERE id_municipio = ?', [id_municipio]);
     
-    console.log('Resultados de la consulta:', rows); // Debug
-
     if (!rows || rows.length === 0) {
-      return res.status(404).json({ 
-        message: 'No se encontraron localidades para este departamento',
-        id_municipio: id_municipio
-      });
+      return res.status(404).json({ message: 'No se encontraron municipios para este departamento' });
     }
     
     res.json(rows);
   } catch (error) {
-    console.error('Error completo:', error);
-    res.status(500).json({ 
-      error: 'Error interno del servidor',
-      details: error.message 
-    });
+    console.error('Error al obtener municipios:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
 
 
-//////////////post/////////////
+
+
 ServidorWeb.post("/registros", async (req, res) => {
-  const {
-    id, dni, provincia_id, departamento_id, municipio_id, localidad_id, persona_id, usuario_id, ubicacion_id, comisaria_id, fecha, hora, horaregistro, alias, causa, tipo, descripcion, habilitado, eliminado, imagenes
-  } = req.body;
+  const {dni,provincia_id, departamento_id, municipio_id, localidad_id, persona_id, usuario_id, comisaria_id, fecha, hora, fecha_registro, hora_registro, alias, causa, tipo, descripcion, habilitado, eliminado, imagenes, latitud, longitud, geo_dato, pais_id } = req.body;
 
   try {
     const [result] = await pool.query(
-      `INSERT INTO registros_detenidos (
-        id, dni, provincia_id, departamento_id, municipio_id, localidad_id, persona_id, usuario_id, ubicacion_id, comisaria_id, fecha, hora, horaregistro, alias, causa, tipo, descripcion, habilitado, eliminado, imagenes, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+      `INSERT INTO registros_detenidos ( dni, provincia_id, departamento_id, municipio_id, localidad_id, persona_id, usuario_id, comisaria_id, fecha, hora, fecha_registro, hora_registro, alias, causa, tipo, descripcion, habilitado, eliminado, imagenes, latitud, longitud, geo_dato, pais_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
       [
-        id, dni, provincia_id, departamento_id, municipio_id, localidad_id, persona_id, usuario_id, ubicacion_id, comisaria_id, fecha, hora, horaregistro, alias, causa, tipo, descripcion, habilitado, eliminado, imagenes
+        dni, provincia_id, departamento_id, municipio_id, localidad_id, persona_id, usuario_id, comisaria_id, fecha, hora, fecha_registro, hora_registro, alias, causa, tipo, descripcion, habilitado, eliminado, imagenes, latitud, longitud, geo_dato, pais_id
       ]
     );
 
@@ -202,11 +177,12 @@ ServidorWeb.post("/registros", async (req, res) => {
     });
   } catch (error) {
     console.error("Error en la inserción:", error);
-    res.status(500).json({ message: "Error al crear el registro", error: error.message });
+    res.status(500).json({ 
+      message: "Error al crear el registro", 
+      error: error.message 
+    });
   }
 });
-
-
 
 
 
